@@ -245,7 +245,7 @@ function viewLogin(){
 function menuBtn(){
   return '<div class="mw"><button class="menu-btn" data-a="menu" aria-label="Menu">'+ICON.dots+'</button>'+(S.menu?'<div class="dd"><button data-a="home">'+ICON.home+'Home</button><button data-a="view" data-v="help">'+ICON.help+'Help and support</button><button class="lo" data-a="logout">'+ICON.logout+'Log out</button></div>':'')+'</div>';
 }
-function head(title,back){return '<div class="top2">'+(back?'<button class="back" data-a="back" aria-label="Back">'+ICON.back+'</button>':'')+'<h2>'+esc(title)+'</h2>'+menuBtn()+'</div>';}
+function head(title,back){return '<div class="top2">'+(back?'<button class="back" data-a="back" aria-label="Back" title="Back">'+ICON.back+'</button>':'')+'<h2>'+esc(title)+'</h2>'+menuBtn()+'</div>';}
 function nav(){
   var t=[["home","Home",ICON.home],["salary","Salary",ICON.wallet],["slips","Payslips",ICON.doc],["att","Attendance",ICON.cal],["me","Profile",ICON.user]];
   return '<nav>'+t.map(function(x){return '<button data-a="tab" data-t="'+x[0]+'" class="'+(S.tab===x[0]&&!S.view?"on":"")+'">'+x[2]+x[1]+'</button>';}).join("")+'</nav>';
@@ -269,7 +269,7 @@ function viewHome(){
   return h;
 }
 function viewSalary(){
-  var r=cur(), h='<div class="scr">'+head("Salary details",false)+'<div class="pad">';
+  var r=cur(), h='<div class="scr">'+head("Salary details",true)+'<div class="pad">';
   if(!r){return h+noData()+'</div></div>';}
   h+=monthChips()+'<div class="card hero"><div class="lbl">Net pay · '+mlabel(r.month)+'</div><div class="big">'+inr(r.net_pay)+'</div><div class="row"><div class="mini">Paid days<b>'+r.paid_days+'</b></div><div class="mini">OT hours<b>'+r.ot_hours+'</b></div></div></div>';
   h+='<div class="sec">Earnings</div><div class="card">'+entries(r.earnings).map(function(e){return '<div class="item"><span class="k">'+esc(e[0])+'</span><span class="v">'+inr(e[1])+'</span></div>';}).join("")+'<div class="tot"><span>Total earnings</span><span>'+inr(r.total_earnings)+'</span></div></div>';
@@ -278,13 +278,13 @@ function viewSalary(){
   return h;
 }
 function viewSlips(){
-  var h='<div class="scr">'+head("My payslips",false)+'<div class="pad">';
+  var h='<div class="scr">'+head("My payslips",true)+'<div class="pad">';
   if(!S.rows.length){return h+noData()+'</div></div>';}
   h+='<div class="card">'+S.rows.map(function(r){return '<button class="mrow" data-a="slip" data-m="'+r.month+'"><span class="mico">'+ICON.doc+'</span><span class="grow"><b>'+mlabel(r.month)+'</b><small>Paid days '+r.paid_days+'</small></span><span class="amt">'+inr(r.net_pay)+'</span>'+ICON.chev+'</button>';}).join("")+'</div></div></div>';
   return h;
 }
 function viewAtt(){
-  var h='<div class="scr">'+head("Attendance",false)+'<div class="pad">';
+  var h='<div class="scr">'+head("Attendance",true)+'<div class="pad">';
   if(!S.rows.length){return h+noData()+'</div></div>';}
   var r=cur(), dim=daysIn(r.month), pct=Math.min(1,r.paid_days/dim), C=2*Math.PI*44;
   h+=monthChips()+'<div class="card ring"><svg viewBox="0 0 112 112"><circle cx="56" cy="56" r="44" fill="none" stroke="#E5EAF0" stroke-width="12"/><circle cx="56" cy="56" r="44" fill="none" stroke="#0B5E97" stroke-width="12" stroke-linecap="round" stroke-dasharray="'+(C*pct).toFixed(1)+' '+C.toFixed(1)+'" transform="rotate(-90 56 56)"/><text x="56" y="54" text-anchor="middle" font-size="24" font-weight="700" fill="#1F2937">'+r.paid_days+'</text><text x="56" y="72" text-anchor="middle" font-size="11" fill="#6B7280">of '+dim+' days</text></svg>'+
@@ -295,7 +295,7 @@ function viewAtt(){
 }
 function viewMe(){
   var e=S.emp||{}, ok=String(e.status||"").toLowerCase()==="active";
-  var h='<div class="scr">'+head("Profile",false)+'<div class="pad"><div class="card"><div style="display:flex;align-items:center;gap:12px;margin-bottom:8px"><div class="avatar" style="background:var(--blue-l);color:var(--blue)">'+esc(titleCase(e.full_name||"C").slice(0,1))+'</div><div><b style="font-size:17px">'+esc(titleCase(e.full_name))+'</b><br><span class="chip '+(ok?"ok":"off")+'">'+esc(titleCase(e.status||"-"))+'</span></div></div>'+
+  var h='<div class="scr">'+head("Profile",true)+'<div class="pad"><div class="card"><div style="display:flex;align-items:center;gap:12px;margin-bottom:8px"><div class="avatar" style="background:var(--blue-l);color:var(--blue)">'+esc(titleCase(e.full_name||"C").slice(0,1))+'</div><div><b style="font-size:17px">'+esc(titleCase(e.full_name))+'</b><br><span class="chip '+(ok?"ok":"off")+'">'+esc(titleCase(e.status||"-"))+'</span></div></div>'+
    '<div class="item"><span class="k">TSPL ID</span><span class="v">'+esc(e.employee_id||"-")+'</span></div><div class="item"><span class="k">Company</span><span class="v">'+esc(e.company||"-")+'</span></div><div class="item"><span class="k">Department</span><span class="v">'+esc(e.designation||"-")+'</span></div><div class="item"><span class="k">Joining date</span><span class="v">'+dlabel(e.joining_date)+'</span></div><div class="item"><span class="k">Scheme</span><span class="v">'+esc(e.scheme||"-")+'</span></div></div>';
   if(S.pw){h+='<div class="card"><div class="fld"><input id="np1" type="password" placeholder="New password (min 8 characters)"></div><div class="fld"><input id="np2" type="password" placeholder="Repeat new password"></div><button class="btn" data-a="savepw">Save password</button></div>';}
   else{h+='<button class="btn sec2" style="margin-bottom:10px" data-a="pw">Change password</button>';}
@@ -377,6 +377,26 @@ async function sendTicket(){
   }catch(x){toast("Could not send the ticket. Please try again.");}
   render();
 }
+function pushAppRoute(){
+  if(!window.history || !window.history.pushState){return;}
+  var state={tsplWorkforce:true,tab:S.tab,view:S.view?Object.assign({},S.view):null,navIndex:((window.history.state&&window.history.state.tsplWorkforce)?(window.history.state.navIndex||0):0)+1};
+  window.history.pushState(state,"",window.location.href);
+}
+function goBack(){
+  var st=window.history&&window.history.state;
+  if(st&&st.tsplWorkforce&&(st.navIndex||0)>0){window.history.back();return;}
+  if(S.view){S.view=null;render();return;}
+  if(S.tab!=="home"){S.tab="home";S.view=null;render();return;}
+}
+window.addEventListener("popstate",function(ev){
+  if(ev.state&&ev.state.tsplWorkforce){
+    S.tab=ev.state.tab||"home";
+    S.view=ev.state.view||null;
+  }else{
+    S.tab="home";S.view=null;
+  }
+  S.menu=false;S.pw=false;render();
+});
 function render(){
   var app=document.getElementById("app"), h="";
   if(!DEMO&&!S.emp&&!S.rows.length&&!S.session){h=viewLogin();}
@@ -396,12 +416,12 @@ document.addEventListener("click",function(ev){
   S.menu=false;
   if(a==="login"){doLogin();}
   else if(a==="eye"){var i=document.getElementById("lpw");i.type=i.type==="password"?"text":"password";}
-  else if(a==="tab"){S.tab=b.getAttribute("data-t");S.view=null;render();}
-  else if(a==="home"){S.tab="home";S.view=null;render();}
+  else if(a==="tab"){S.tab=b.getAttribute("data-t");S.view=null;pushAppRoute();render();}
+  else if(a==="home"){S.tab="home";S.view=null;pushAppRoute();render();}
   else if(a==="month"){S.month=b.getAttribute("data-m");render();}
-  else if(a==="slip"){S.view={v:"slip",m:b.getAttribute("data-m")};render();}
-  else if(a==="view"){S.view={v:b.getAttribute("data-v")};render(); if(S.view.v==="help"){loadTickets().then(render);}}
-  else if(a==="back"){S.view=null;render();}
+  else if(a==="slip"){S.view={v:"slip",m:b.getAttribute("data-m")};pushAppRoute();render();}
+  else if(a==="view"){S.view={v:b.getAttribute("data-v")};pushAppRoute();render(); if(S.view.v==="help"){loadTickets().then(render);}}
+  else if(a==="back"){goBack();}
   else if(a==="pw"){S.pw=true;render();}
   else if(a==="savepw"){doChangePw();}
   else if(a==="logout"){doLogout();}
@@ -425,6 +445,7 @@ document.addEventListener("change",function(ev){
 document.addEventListener("keydown",function(ev){if(ev.key==="Enter"&&document.getElementById("lbtn")){doLogin();}});
 
 (async function start(){
+  if(window.history&&window.history.replaceState){window.history.replaceState({tsplWorkforce:true,tab:S.tab,view:null,navIndex:0},"",window.location.href);}
   if("serviceWorker" in navigator && location.protocol.indexOf("http")===0){try{navigator.serviceWorker.register("sw.js");}catch(x){}}
   if(DEMO){demoData();render();return;}
   sb=window.supabase.createClient(CFG.SUPABASE_URL,CFG.SUPABASE_KEY);
